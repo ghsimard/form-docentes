@@ -2,26 +2,38 @@
   "name": "form-docentes",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "proxy": "http://localhost:3001",
   "dependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
+    "@craco/craco": "^7.1.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.126",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "pg": "^8.15.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "ts-node src/server/index.ts",
+    "import-rectores": "ts-node src/server/importRectores.ts",
+    "convert-types": "ts-node src/server/convertDataTypes.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -40,5 +52,21 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss7-compat": "^2.2.17",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.1",
+    "@types/pg": "^8.11.13",
+    "autoprefixer": "^9.8.8",
+    "postcss": "^7.0.39",
+    "postcss-flexbugs-fixes": "^4.2.1",
+    "postcss-loader": "^4.2.0",
+    "postcss-normalize": "^8.0.1",
+    "postcss-preset-env": "^6.7.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

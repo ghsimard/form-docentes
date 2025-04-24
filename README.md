@@ -1,46 +1,90 @@
-# Getting Started with Create React App
+# Form Docentes - Encuesta de Ambiente Escolar
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este proyecto es una aplicación web para recopilar información sobre el ambiente escolar a través de una encuesta dirigida a docentes. La aplicación es parte del Programa Rectores Líderes Transformadores y Coordinadores Líderes Transformadores.
 
-## Available Scripts
+## Características
 
-In the project directory, you can run:
+- Formulario interactivo para docentes
+- Autocompletado de nombres de instituciones educativas
+- Validación de campos requeridos
+- Almacenamiento de respuestas en base de datos PostgreSQL
+- Interfaz bilingüe (español)
+- Diseño responsivo
 
-### `npm start`
+## Tecnologías Utilizadas
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React
+- TypeScript
+- Node.js
+- Express
+- PostgreSQL
+- Tailwind CSS
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Requisitos Previos
 
-### `npm test`
+- Node.js (v14 o superior)
+- PostgreSQL (v13 o superior)
+- npm o yarn
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Instalación
 
-### `npm run build`
+1. Clonar el repositorio:
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd form-docentes
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Instalar dependencias:
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Configurar variables de entorno:
+Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
+```
+DB_USER=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=form_docentes
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Iniciar el servidor de desarrollo:
+```bash
+npm start
+```
 
-### `npm run eject`
+5. En otra terminal, iniciar el servidor backend:
+```bash
+npm run server
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Estructura del Proyecto
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `/src` - Código fuente de la aplicación React
+  - `/components` - Componentes React reutilizables
+  - `/data` - Datos estáticos y configuraciones
+  - `/types` - Definiciones de tipos TypeScript
+  - `/server` - Código del servidor Express
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Scripts Disponibles
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- `npm start` - Inicia el servidor de desarrollo de React
+- `npm run build` - Construye la aplicación para producción
+- `npm run server` - Inicia el servidor backend
+- `npm test` - Ejecuta las pruebas
+- `npm run import-rectores` - Importa datos de rectores desde Excel
 
-## Learn More
+## Contribución
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Para contribuir al proyecto:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Fork el repositorio
+2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
