@@ -10,7 +10,7 @@ const pool = new Pool({
     database: process.env.DB_NAME || 'form_docentes',
 });
 const router = express.Router();
-// Endpoint to fetch institution names
+// Endpoint to fetch school names
 router.get('/schools', async (req, res) => {
     try {
         const searchTerm = req.query.search || '';
@@ -26,7 +26,7 @@ router.get('/schools', async (req, res) => {
         res.json(result.rows.map(row => row.name));
     }
     catch (error) {
-        console.error('Error fetching institution names:', error);
+        console.error('Error fetching school names:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
