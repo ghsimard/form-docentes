@@ -86,9 +86,9 @@ const createTableQuery = `
     grados_asignados TEXT[] NOT NULL,
     jornada VARCHAR(50) NOT NULL,
     retroalimentacion_de TEXT[] NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL,
-    frequency_ratings8 JSONB NOT NULL
+    "Comunicacion" JSONB NOT NULL,
+    "Practicas_Pedagogicas" JSONB NOT NULL,
+    "Convivencia" JSONB NOT NULL
   );
 `;
 
@@ -118,9 +118,9 @@ app.post('/api/submit-form', async (req, res) => {
         grados_asignados,
         jornada,
         retroalimentacion_de,
-        frequency_ratings6,
-        frequency_ratings7,
-        frequency_ratings8
+        "Comunicacion",
+        "Practicas_Pedagogicas",
+        "Convivencia"
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;

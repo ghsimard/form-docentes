@@ -11,8 +11,13 @@ interface FormData {
   teachingGradesLate: string[];
   schedule: string;
   feedbackSources: string[];
-  [key: `frequencyRatings${number}`]: FrequencyRatings;
+  Comunicacion: FrequencyRatings;
+  Practicas_Pedagogicas: FrequencyRatings;
+  Convivencia: FrequencyRatings;
+  [key: string]: string | string[] | FrequencyRatings;
 }
+
+type FrequencySection = 'Comunicacion' | 'Practicas_Pedagogicas' | 'Convivencia';
 
 function App() {
   const [formData, setFormData] = useState<FormData>({
@@ -22,9 +27,9 @@ function App() {
     teachingGradesLate: [],
     schedule: '',
     feedbackSources: [],
-    frequencyRatings6: {},
-    frequencyRatings7: {},
-    frequencyRatings8: {},
+    Comunicacion: {},
+    Practicas_Pedagogicas: {},
+    Convivencia: {},
   });
 
   const [schoolSuggestions, setSchoolSuggestions] = useState<string[]>([]);
@@ -59,11 +64,11 @@ function App() {
     }));
   };
 
-  const handleFrequencyChange = (section: number, question: string, value: string) => {
+  const handleFrequencyChange = (section: FrequencySection, question: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [`frequencyRatings${section}`]: {
-        ...prev[`frequencyRatings${section}`],
+      [section]: {
+        ...prev[section],
         [question]: value
       }
     }));
@@ -100,17 +105,17 @@ function App() {
     }
     
     // Check if all frequency rating questions are answered
-    const validateFrequencySection = (questions: string[], sectionNumber: number) => {
+    const validateFrequencySection = (questions: string[], section: FrequencySection) => {
       return questions.every(question => 
-        formData[`frequencyRatings${sectionNumber}`][question] !== undefined
+        formData[section][question] !== undefined
       );
     };
 
-    const section6Complete = validateFrequencySection(frequencyQuestions7, 6);
-    const section7Complete = validateFrequencySection(frequencyQuestions8, 7);
-    const section8Complete = validateFrequencySection(frequencyQuestions9, 8);
+    const comunicacionComplete = validateFrequencySection(frequencyQuestions7, 'Comunicacion');
+    const practicasComplete = validateFrequencySection(frequencyQuestions8, 'Practicas_Pedagogicas');
+    const convivenciaComplete = validateFrequencySection(frequencyQuestions9, 'Convivencia');
 
-    if (!section6Complete || !section7Complete || !section8Complete) {
+    if (!comunicacionComplete || !practicasComplete || !convivenciaComplete) {
       alert('Por favor, responda todas las preguntas de frecuencia antes de enviar el formulario.');
       return;
     }
@@ -139,9 +144,9 @@ function App() {
           teachingGradesLate: [],
           schedule: '',
           feedbackSources: [],
-          frequencyRatings6: {},
-          frequencyRatings7: {},
-          frequencyRatings8: {},
+          Comunicacion: {},
+          Practicas_Pedagogicas: {},
+          Convivencia: {},
         });
       } else {
         throw new Error(result.error || 'Failed to submit form');
@@ -183,7 +188,17 @@ function App() {
     setSchoolSuggestions([]);
   };
 
-  const FrequencyMatrix = ({ questionNumber, questions, title }: { questionNumber: number; questions: string[]; title: string }) => (
+  const FrequencyMatrix = ({ 
+    questionNumber, 
+    questions, 
+    title, 
+    section 
+  }: { 
+    questionNumber: number; 
+    questions: string[]; 
+    title: string; 
+    section: FrequencySection 
+  }) => (
     <div className="space-y-8 mt-8">
       <div>
         <h3 className="text-lg font-medium text-gray-900">
@@ -210,7 +225,7 @@ function App() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {questions.map((question, qIndex) => {
-              const isAnswered = formData[`frequencyRatings${questionNumber}`][question] !== undefined;
+              const isAnswered = formData[section][question] !== undefined;
               const showError = hasAttemptedSubmit && !isAnswered;
               return (
                 <tr key={qIndex} className={qIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
@@ -224,8 +239,8 @@ function App() {
                         type="radio"
                         name={`frequency-${questionNumber}-${qIndex}`}
                         value={option}
-                        checked={formData[`frequencyRatings${questionNumber}`][question] === option}
-                        onChange={() => handleFrequencyChange(questionNumber, question, option)}
+                        checked={formData[section][question] === option}
+                        onChange={() => handleFrequencyChange(section, question, option)}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                         required
                       />
@@ -435,16 +450,19 @@ function App() {
               questionNumber={6} 
               questions={frequencyQuestions7} 
               title="COMUNICACIÓN"
+              section="Comunicacion"
             />
             <FrequencyMatrix 
               questionNumber={7} 
               questions={frequencyQuestions8} 
               title="PRÁCTICAS PEDAGÓGICAS"
+              section="Practicas_Pedagogicas"
             />
             <FrequencyMatrix 
               questionNumber={8} 
               questions={frequencyQuestions9} 
               title="CONVIVENCIA"
+              section="Convivencia"
             />
 
             {/* Submit Button */}

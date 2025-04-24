@@ -56,7 +56,8 @@
     "prod:server": "NODE_ENV=production node dist/server/index.js",
     "build:server": "tsc -p src/server/tsconfig.json",
     "generate-favicon": "node scripts/generate-favicon.js",
-    "migrate-table": "ts-node scripts/migrate-table-name.ts"
+    "migrate-table": "ts-node scripts/migrate-table-name.ts",
+    "migrate-column-names": "ts-node scripts/migrate-column-names.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -81,3 +82,4 @@
     "ts-node": "^10.9.2"
   }
 }
+ 
