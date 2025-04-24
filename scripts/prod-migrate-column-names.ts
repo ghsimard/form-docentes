@@ -85,7 +85,7 @@ async function checkColumnsExist(pool: Pool): Promise<boolean> {
       SELECT column_name 
       FROM information_schema.columns 
       WHERE table_name = 'acudientes_form_submissions' 
-      AND column_name IN ('frequency_ratings5', 'frequency_ratings6', 'frequency_ratings7')
+      AND column_name IN ('frequency_ratings5', 'frequency_ratings6', 'frequency_ratings7', 'Comunicacion', 'Practicas_Pedagogicas', 'Convivencia')
     `);
     
     // Check estudiantes_form_submissions
@@ -93,7 +93,7 @@ async function checkColumnsExist(pool: Pool): Promise<boolean> {
       SELECT column_name 
       FROM information_schema.columns 
       WHERE table_name = 'estudiantes_form_submissions' 
-      AND column_name IN ('frequency_ratings5', 'frequency_ratings6', 'frequency_ratings7')
+      AND column_name IN ('frequency_ratings5', 'frequency_ratings6', 'frequency_ratings7', 'Comunicacion', 'Practicas_Pedagogicas', 'Convivencia')
     `);
     
     // Check docentes_form_submissions
@@ -101,7 +101,7 @@ async function checkColumnsExist(pool: Pool): Promise<boolean> {
       SELECT column_name 
       FROM information_schema.columns 
       WHERE table_name = 'docentes_form_submissions' 
-      AND column_name IN ('frequency_ratings6', 'frequency_ratings7', 'frequency_ratings8')
+      AND column_name IN ('frequency_ratings6', 'frequency_ratings7', 'frequency_ratings8', 'Comunicacion', 'Practicas_Pedagogicas', 'Convivencia')
     `);
     
     const acudientesColumns = acudientesResult.rows.map(row => row.column_name);
@@ -126,11 +126,37 @@ async function checkColumnsExist(pool: Pool): Promise<boolean> {
       docentesColumns.includes(col)
     );
     
-    if (!acudientesComplete || !estudiantesComplete || !docentesComplete) {
-      console.error('One or more required columns are missing:');
-      console.error(`- acudientes_form_submissions: ${acudientesComplete ? 'complete' : 'incomplete'}`);
-      console.error(`- estudiantes_form_submissions: ${estudiantesComplete ? 'complete' : 'incomplete'}`);
-      console.error(`- docentes_form_submissions: ${docentesComplete ? 'complete' : 'incomplete'}`);
+    // Check if new columns already exist
+    const acudientesNewColumnsExist = ['Comunicacion', 'Practicas_Pedagogicas', 'Convivencia'].every(col => 
+      acudientesColumns.includes(col)
+    );
+    
+    const estudiantesNewColumnsExist = ['Comunicacion', 'Practicas_Pedagogicas', 'Convivencia'].every(col => 
+      estudiantesColumns.includes(col)
+    );
+    
+    const docentesNewColumnsExist = ['Comunicacion', 'Practicas_Pedagogicas', 'Convivencia'].every(col => 
+      docentesColumns.includes(col)
+    );
+    
+    // If new columns already exist, we can skip the migration
+    if (acudientesNewColumnsExist && estudiantesNewColumnsExist && docentesNewColumnsExist) {
+      console.log('New columns already exist. Skipping migration.');
+      return false;
+    }
+    
+    if (!acudientesComplete && !acudientesNewColumnsExist) {
+      console.error('Required columns are missing in acudientes_form_submissions');
+      return false;
+    }
+    
+    if (!estudiantesComplete && !estudiantesNewColumnsExist) {
+      console.error('Required columns are missing in estudiantes_form_submissions');
+      return false;
+    }
+    
+    if (!docentesComplete && !docentesNewColumnsExist) {
+      console.error('Required columns are missing in docentes_form_submissions');
       return false;
     }
     
@@ -138,6 +164,77 @@ async function checkColumnsExist(pool: Pool): Promise<boolean> {
   } catch (error) {
     console.error('Error checking columns:', error);
     return false;
+  }
+}
+
+// Function to create new columns
+async function createNewColumns(pool: Pool): Promise<void> {
+  console.log('Creating new columns...');
+  
+  // Create columns in acudientes_form_submissions
+  try {
+    await pool.query(`ALTER TABLE acudientes_form_submissions ADD COLUMN IF NOT EXISTS "Comunicacion" JSONB;`);
+    console.log('Added Comunicacion column to acudientes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Comunicacion column to acudientes_form_submissions:', error);
+  }
+  
+  try {
+    await pool.query(`ALTER TABLE acudientes_form_submissions ADD COLUMN IF NOT EXISTS "Practicas_Pedagogicas" JSONB;`);
+    console.log('Added Practicas_Pedagogicas column to acudientes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Practicas_Pedagogicas column to acudientes_form_submissions:', error);
+  }
+  
+  try {
+    await pool.query(`ALTER TABLE acudientes_form_submissions ADD COLUMN IF NOT EXISTS "Convivencia" JSONB;`);
+    console.log('Added Convivencia column to acudientes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Convivencia column to acudientes_form_submissions:', error);
+  }
+  
+  // Create columns in estudiantes_form_submissions
+  try {
+    await pool.query(`ALTER TABLE estudiantes_form_submissions ADD COLUMN IF NOT EXISTS "Comunicacion" JSONB;`);
+    console.log('Added Comunicacion column to estudiantes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Comunicacion column to estudiantes_form_submissions:', error);
+  }
+  
+  try {
+    await pool.query(`ALTER TABLE estudiantes_form_submissions ADD COLUMN IF NOT EXISTS "Practicas_Pedagogicas" JSONB;`);
+    console.log('Added Practicas_Pedagogicas column to estudiantes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Practicas_Pedagogicas column to estudiantes_form_submissions:', error);
+  }
+  
+  try {
+    await pool.query(`ALTER TABLE estudiantes_form_submissions ADD COLUMN IF NOT EXISTS "Convivencia" JSONB;`);
+    console.log('Added Convivencia column to estudiantes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Convivencia column to estudiantes_form_submissions:', error);
+  }
+  
+  // Create columns in docentes_form_submissions
+  try {
+    await pool.query(`ALTER TABLE docentes_form_submissions ADD COLUMN IF NOT EXISTS "Comunicacion" JSONB;`);
+    console.log('Added Comunicacion column to docentes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Comunicacion column to docentes_form_submissions:', error);
+  }
+  
+  try {
+    await pool.query(`ALTER TABLE docentes_form_submissions ADD COLUMN IF NOT EXISTS "Practicas_Pedagogicas" JSONB;`);
+    console.log('Added Practicas_Pedagogicas column to docentes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Practicas_Pedagogicas column to docentes_form_submissions:', error);
+  }
+  
+  try {
+    await pool.query(`ALTER TABLE docentes_form_submissions ADD COLUMN IF NOT EXISTS "Convivencia" JSONB;`);
+    console.log('Added Convivencia column to docentes_form_submissions');
+  } catch (error) {
+    console.error('Error adding Convivencia column to docentes_form_submissions:', error);
   }
 }
 
@@ -190,6 +287,16 @@ async function migrateColumnNames() {
     // Check if columns exist
     console.log('Checking if required columns exist...');
     const columnsExist = await checkColumnsExist(pool);
+    
+    // If columns don't exist and we're in production, create them
+    if (!columnsExist && process.env.NODE_ENV === 'production') {
+      console.log('Required columns do not exist. Creating new columns...');
+      await createNewColumns(pool);
+      console.log('New columns created successfully.');
+      rl.close();
+      return;
+    }
+    
     if (!columnsExist) {
       console.error('One or more required columns do not exist. Aborting migration.');
       rl.close();
