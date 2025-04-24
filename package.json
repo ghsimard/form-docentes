@@ -33,7 +33,11 @@
     "eject": "react-scripts eject",
     "server": "ts-node src/server/index.ts",
     "import-rectores": "ts-node src/server/importRectores.ts",
-    "convert-types": "ts-node src/server/convertDataTypes.ts"
+    "convert-types": "ts-node src/server/convertDataTypes.ts",
+    "deploy": "bash scripts/deploy.sh",
+    "prod:server": "NODE_ENV=production node dist/server/index.js",
+    "build:server": "tsc -p src/server/tsconfig.json",
+    "generate-favicon": "node scripts/generate-favicon.js"
   },
   "eslintConfig": {
     "extends": [
@@ -65,6 +69,7 @@
     "postcss-loader": "^4.2.0",
     "postcss-normalize": "^8.0.1",
     "postcss-preset-env": "^6.7.0",
+    "sharp": "^0.34.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
