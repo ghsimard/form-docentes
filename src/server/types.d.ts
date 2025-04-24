@@ -22,4 +22,20 @@ declare module 'pg' {
 
     end(): Promise<void>;
   }
+}
+
+declare module 'xlsx' {
+  export const readFile: (filename: string) => any;
+  export const utils: {
+    sheet_to_json: <T>(worksheet: any, options?: {
+      raw?: boolean;
+      dateNF?: string;
+      defval?: any;
+      header?: string[] | number;
+    }) => T[];
+  };
+  export default {
+    readFile,
+    utils
+  };
 } 

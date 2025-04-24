@@ -1,6 +1,5 @@
 import { Pool } from 'pg';
-import pkg from 'xlsx';
-const { readFile, utils } = pkg;
+import * as XLSX from 'xlsx';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -229,13 +228,13 @@ const convertValue = (value: any, type: string): any => {
 const importExcelData = async (filePath: string) => {
   try {
     // Read Excel file
-    const workbook = readFile(filePath, { cellDates: true });
+    const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = utils.sheet_to_json(worksheet) as ExcelRow[];
+    const data = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[];
 
     if (data.length === 0) {
-      throw new Error('Excel file is empty');
+      throw new Error('No data found in Excel file');
     }
 
     // Create table
