@@ -16,7 +16,20 @@ async function waitForDatabase(): Promise<void> {
   while (retries < maxRetries) {
     try {
       if (!process.env.DATABASE_URL) {
-        console.error('DATABASE_URL environment variable is not set. Please configure the database connection.');
+        console.error(`
+DATABASE_URL environment variable is not set. 
+
+To configure the database connection in Render.com:
+1. Create a new PostgreSQL database in your Render.com dashboard
+2. Go to your Web Service's Environment settings
+3. Add a new Environment Variable:
+   - Key: DATABASE_URL
+   - Value: Copy the "External Database URL" from your PostgreSQL database settings
+
+For local development:
+1. Create a .env file in the project root
+2. Add: DATABASE_URL=postgres://username:password@localhost:5432/form_docentes
+`);
         process.exit(1);
       }
 
