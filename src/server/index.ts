@@ -18,13 +18,22 @@ app.use(cors());
 app.use(express.json());
 
 // PostgreSQL connection configuration
-const pool = new Pool({
-  user: process.env.DB_USER || 'ghsimard',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'form_docentes',
-});
+const pool = new Pool(
+  process.env.DATABASE_URL 
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false
+        }
+      }
+    : {
+        user: process.env.DB_USER || 'ghsimard',
+        password: process.env.DB_PASSWORD || '',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432'),
+        database: process.env.DB_NAME || 'form_docentes'
+      }
+);
 
 // Create table if it doesn't exist
 const createTableQuery = `
