@@ -116,7 +116,7 @@ function App() {
     }
     
     try {
-      const response = await fetch('http://localhost:3001/api/submit-form', {
+      const response = await fetch('/api/submit-form', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ function App() {
     // Only fetch new suggestions if we have 2 or more characters
     if (value.length >= 2) {
       try {
-        const response = await fetch(`http://localhost:3001/api/search-schools?q=${encodeURIComponent(value)}`);
+        const response = await fetch(`/api/search-schools?q=${encodeURIComponent(value)}`);
         if (response.ok) {
           const suggestions = await response.json();
           if (suggestions.length > 0) {
