@@ -17,4 +17,5 @@ services:
 databases:
   - name: form-docentes-db
     databaseName: form_docentes
+    plan: free # Specify the free plan
     ipAllowList: [] # allow all 

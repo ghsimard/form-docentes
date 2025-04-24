@@ -19,9 +19,31 @@ console.log('Environment:', {
 // Middleware
 app.use(cors());
 app.use(express.json());
+// Health check endpoint
+app.get('/health', async (req, res) => {
+    try {
+        if (!process.env.DATABASE_URL) {
+            throw new Error('DATABASE_URL is not set');
+        }
+        await pool.query('SELECT NOW()');
+        res.json({ status: 'healthy', database: 'connected' });
+    }
+    catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).json({
+            status: 'unhealthy',
+            database: 'disconnected',
+            error: process.env.NODE_ENV === 'production' ? 'Database connection failed' : error.message
+        });
+    }
+});
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../../build')));
 // PostgreSQL connection configuration
+if (!process.env.DATABASE_URL) {
+    console.error('DATABASE_URL environment variable is not set!');
+    process.exit(1); // Exit if no database URL is provided
+}
 const dbConfig = {
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.NODE_ENV === 'production' ? {
@@ -36,7 +58,12 @@ const pool = new Pool(dbConfig);
 // Test database connection
 pool.query('SELECT NOW()')
     .then(() => console.log('Successfully connected to database'))
-    .catch(err => console.error('Error connecting to database:', err));
+    .catch(err => {
+    console.error('Error connecting to database:', err);
+    if (process.env.NODE_ENV === 'production') {
+        process.exit(1); // Exit in production if we can't connect to the database
+    }
+});
 // Create table if it doesn't exist
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS form_submissions (
