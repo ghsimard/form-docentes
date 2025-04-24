@@ -43,10 +43,10 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "node scripts/wait-for-db.js && node dist/server/index.js",
+    "start": "node dist/scripts/wait-for-db.js && node dist/server/index.js",
     "start:dev": "react-scripts start",
     "prebuild": "npm install",
-    "build": "react-scripts build && tsc -p src/server/tsconfig.json && tsc scripts/wait-for-db.js --outDir dist/scripts --esModuleInterop",
+    "build": "react-scripts build && tsc -p src/server/tsconfig.json && tsc -p scripts/tsconfig.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "ts-node src/server/index.ts",

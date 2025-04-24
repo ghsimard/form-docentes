@@ -1,10 +1,9 @@
-import pg from 'pg';
-const { Pool } = pg;
+import { Pool } from 'pg';
 
 const maxRetries = 30;
 const retryInterval = 2000; // 2 seconds
 
-async function waitForDatabase() {
+async function waitForDatabase(): Promise<void> {
   let retries = 0;
   
   while (retries < maxRetries) {
