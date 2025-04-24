@@ -21,7 +21,7 @@
     "@types/pg": "^8.11.13",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/xlsx": "^0.0.36",
+    "@types/xlsx": "^0.0.35",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "autoprefixer": "^9.8.8",
@@ -45,7 +45,7 @@
   "scripts": {
     "start": "node dist/server/index.js",
     "start:dev": "react-scripts start",
-    "prebuild": "npm ci --include=dev",
+    "prebuild": "npm install",
     "build": "react-scripts build && tsc -p src/server/tsconfig.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
