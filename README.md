@@ -30,7 +30,7 @@ Este proyecto es una aplicación web para recopilar información sobre el ambien
 
 1. Clonar el repositorio:
 ```bash
-git clone [URL_DEL_REPOSITORIO]
+git clone https://github.com/ghsimard/form-docentes.git
 cd form-docentes
 ```
 
