@@ -55,7 +55,8 @@
     "deploy": "bash scripts/deploy.sh",
     "prod:server": "NODE_ENV=production node dist/server/index.js",
     "build:server": "tsc -p src/server/tsconfig.json",
-    "generate-favicon": "node scripts/generate-favicon.js"
+    "generate-favicon": "node scripts/generate-favicon.js",
+    "migrate-table": "ts-node scripts/migrate-table-name.ts"
   },
   "eslintConfig": {
     "extends": [

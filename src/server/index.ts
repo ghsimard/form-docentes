@@ -78,7 +78,7 @@ pool.query('SELECT NOW()')
 
 // Create table if it doesn't exist
 const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS form_submissions (
+  CREATE TABLE IF NOT EXISTS docentes_form_submissions (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     institucion_educativa VARCHAR(255) NOT NULL,
@@ -93,8 +93,8 @@ const createTableQuery = `
 `;
 
 pool.query(createTableQuery)
-  .then(() => console.log('form_submissions table created successfully'))
-  .catch(err => console.error('Error creating form_submissions table:', err));
+  .then(() => console.log('docentes_form_submissions table created successfully'))
+  .catch(err => console.error('Error creating docentes_form_submissions table:', err));
 
 // API endpoint to save form data
 app.post('/api/submit-form', async (req, res) => {
@@ -112,7 +112,7 @@ app.post('/api/submit-form', async (req, res) => {
     } = req.body;
 
     const query = `
-      INSERT INTO form_submissions (
+      INSERT INTO docentes_form_submissions (
         institucion_educativa,
         anos_como_docente,
         grados_asignados,
