@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "proxy": "http://localhost:3001",
   "dependencies": {
     "@craco/craco": "^7.1.0",
