@@ -45,6 +45,7 @@
   "scripts": {
     "start": "node dist/server/index.js",
     "start:dev": "react-scripts start",
+    "prebuild": "npm ci --include=dev",
     "build": "react-scripts build && tsc -p src/server/tsconfig.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
