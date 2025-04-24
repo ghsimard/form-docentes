@@ -2,6 +2,7 @@ services:
   - type: web
     name: form-docentes
     env: node
+    region: oregon
     buildCommand: npm run build
     startCommand: npm start
     envVars:
@@ -9,13 +10,12 @@ services:
         value: production
       - key: PORT
         value: 3000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: form-docentes-db
-          property: connectionString
+    dependsOn:
+      - form-docentes-db
 
 databases:
   - name: form-docentes-db
+    region: oregon
+    plan: free
     databaseName: form_docentes
-    plan: free # Specify the free plan
-    ipAllowList: [] # allow all 
+    ipAllowList: [] 
