@@ -46,7 +46,7 @@
     "start": "node dist/scripts/wait-for-db.js && node dist/server/index.js",
     "start:dev": "react-scripts start",
     "prebuild": "npm install",
-    "build": "react-scripts build && tsc -p src/server/tsconfig.json && tsc -p scripts/tsconfig.json",
+    "build": "react-scripts build && tsc -p src/server/tsconfig.json && tsc -p scripts/tsconfig.json && npm run render-migrate-column-names",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "ts-node src/server/index.ts",
@@ -57,7 +57,10 @@
     "build:server": "tsc -p src/server/tsconfig.json",
     "generate-favicon": "node scripts/generate-favicon.js",
     "migrate-table": "ts-node scripts/migrate-table-name.ts",
-    "migrate-column-names": "ts-node scripts/migrate-column-names.ts"
+    "migrate-column-names": "ts-node scripts/migrate-column-names.ts",
+    "prod-migrate-column-names": "NODE_ENV=production ts-node scripts/prod-migrate-column-names.ts",
+    "render-migrate-column-names": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts",
+    "start:with-migration": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts && node dist/server/index.js"
   },
   "eslintConfig": {
     "extends": [
