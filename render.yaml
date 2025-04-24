@@ -9,13 +9,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3000
-    dependsOn:
-      - form-docentes-db
-
-databases:
-  - name: form-docentes-db
-    region: oregon
-    plan: free
-    databaseName: form_docentes
-    ipAllowList: [] 
+        value: 3000 
