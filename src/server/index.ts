@@ -14,6 +14,13 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Debug environment
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',
+  PORT: process.env.PORT
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -22,16 +29,27 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../../build')));
 
 // PostgreSQL connection configuration
-const pool = new Pool({
+const dbConfig = {
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? {
     rejectUnauthorized: false
   } : false
+};
+
+console.log('Database config:', {
+  hasConnectionString: !!dbConfig.connectionString,
+  ssl: dbConfig.ssl
 });
+
+const pool = new Pool(dbConfig);
+
+// Test database connection
+pool.query('SELECT NOW()')
+  .then(() => console.log('Successfully connected to database'))
+  .catch(err => console.error('Error connecting to database:', err));
 
 // Create table if it doesn't exist
 const createTableQuery = `
-  DROP TABLE IF EXISTS form_submissions;
   CREATE TABLE IF NOT EXISTS form_submissions (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
