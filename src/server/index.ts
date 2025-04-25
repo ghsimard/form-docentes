@@ -86,9 +86,9 @@ const createTableQuery = `
     grados_asignados TEXT[] NOT NULL,
     jornada VARCHAR(50) NOT NULL,
     retroalimentacion_de TEXT[] NOT NULL,
-    "Comunicacion" JSONB NOT NULL,
-    "Practicas_Pedagogicas" JSONB NOT NULL,
-    "Convivencia" JSONB NOT NULL
+    comunicacion JSONB NOT NULL,
+    practicas_pedagogicas JSONB NOT NULL,
+    convivencia JSONB NOT NULL
   );
 `;
 
@@ -106,10 +106,52 @@ app.post('/api/submit-form', async (req, res) => {
       teachingGradesLate,
       schedule,
       feedbackSources,
-      frequencyRatings6,
-      frequencyRatings7,
-      frequencyRatings8
+      Comunicacion,
+      Practicas_Pedagogicas,
+      Convivencia
     } = req.body;
+
+    // Log the received data for debugging
+    console.log('Received form data:', {
+      schoolName,
+      yearsOfExperience,
+      teachingGradesEarly,
+      teachingGradesLate,
+      schedule,
+      feedbackSources,
+      hasComunicacion: !!Comunicacion,
+      hasPracticas: !!Practicas_Pedagogicas,
+      hasConvivencia: !!Convivencia
+    });
+
+    // Validate required fields
+    if (!schoolName || !yearsOfExperience || !schedule) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields',
+        details: {
+          schoolName: !schoolName,
+          yearsOfExperience: !yearsOfExperience,
+          schedule: !schedule
+        }
+      });
+    }
+
+    // Combine early and late teaching grades into a single array
+    const allGrades = [...(teachingGradesEarly || []), ...(teachingGradesLate || [])];
+    if (allGrades.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'At least one teaching grade must be selected'
+      });
+    }
+
+    if (!feedbackSources || feedbackSources.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'At least one feedback source must be selected'
+      });
+    }
 
     const query = `
       INSERT INTO docentes_form_submissions (
@@ -118,16 +160,13 @@ app.post('/api/submit-form', async (req, res) => {
         grados_asignados,
         jornada,
         retroalimentacion_de,
-        "Comunicacion",
-        "Practicas_Pedagogicas",
-        "Convivencia"
+        comunicacion,
+        practicas_pedagogicas,
+        convivencia
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;
     `;
-
-    // Combine early and late teaching grades into a single array
-    const allGrades = [...teachingGradesEarly, ...teachingGradesLate];
 
     const values = [
       schoolName,
@@ -135,9 +174,9 @@ app.post('/api/submit-form', async (req, res) => {
       allGrades,
       schedule,
       feedbackSources,
-      frequencyRatings6,
-      frequencyRatings7,
-      frequencyRatings8
+      Comunicacion,
+      Practicas_Pedagogicas,
+      Convivencia
     ];
 
     const result = await pool.query(query, values);
@@ -145,11 +184,12 @@ app.post('/api/submit-form', async (req, res) => {
       success: true,
       data: result.rows[0]
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving form response:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to save form response'
+      error: 'Failed to save form response',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
@@ -159,6 +199,20 @@ app.get('/api/search-schools', async (req, res) => {
   const searchTerm = req.query.q;
   
   try {
+    // First check if the rectores table exists
+    const tableCheck = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'rectores'
+      );
+    `);
+    
+    if (!tableCheck.rows[0].exists) {
+      // If table doesn't exist, return empty results
+      return res.json([]);
+    }
+
     const query = `
       SELECT DISTINCT TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_) as school_name
       FROM rectores
