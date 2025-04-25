@@ -76,26 +76,6 @@ pool.query('SELECT NOW()')
     }
   });
 
-// Create table if it doesn't exist
-const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS docentes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa VARCHAR(255) NOT NULL,
-    anos_como_docente VARCHAR(50) NOT NULL,
-    grados_asignados TEXT[] NOT NULL,
-    jornada VARCHAR(50) NOT NULL,
-    retroalimentacion_de TEXT[] NOT NULL,
-    comunicacion JSONB NOT NULL,
-    practicas_pedagogicas JSONB NOT NULL,
-    convivencia JSONB NOT NULL
-  );
-`;
-
-pool.query(createTableQuery)
-  .then(() => console.log('docentes_form_submissions table created successfully'))
-  .catch(err => console.error('Error creating docentes_form_submissions table:', err));
-
 // API endpoint to save form data
 app.post('/api/submit-form', async (req, res) => {
   try {
@@ -106,9 +86,9 @@ app.post('/api/submit-form', async (req, res) => {
       teachingGradesLate,
       schedule,
       feedbackSources,
-      Comunicacion,
-      Practicas_Pedagogicas,
-      Convivencia
+      comunicacion,
+      practicas_pedagogicas,
+      convivencia
     } = req.body;
 
     // Log the received data for debugging
@@ -119,9 +99,9 @@ app.post('/api/submit-form', async (req, res) => {
       teachingGradesLate,
       schedule,
       feedbackSources,
-      hasComunicacion: !!Comunicacion,
-      hasPracticas: !!Practicas_Pedagogicas,
-      hasConvivencia: !!Convivencia
+      hasComunicacion: !!comunicacion,
+      hasPracticas: !!practicas_pedagogicas,
+      hasConvivencia: !!convivencia
     });
 
     // Validate required fields
@@ -174,9 +154,9 @@ app.post('/api/submit-form', async (req, res) => {
       allGrades,
       schedule,
       feedbackSources,
-      Comunicacion,
-      Practicas_Pedagogicas,
-      Convivencia
+      comunicacion,
+      practicas_pedagogicas,
+      convivencia
     ];
 
     const result = await pool.query(query, values);

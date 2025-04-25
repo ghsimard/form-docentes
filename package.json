@@ -58,7 +58,7 @@
     "generate-favicon": "node scripts/generate-favicon.js",
     "migrate-table": "ts-node scripts/migrate-table-name.ts",
     "migrate-column-names": "ts-node scripts/migrate-column-names.ts",
-    "prod-migrate-column-names": "NODE_ENV=production ts-node scripts/prod-migrate-column-names.ts",
+    "prod-migrate-column-names": "NODE_ENV=production ts-node scripts/migrate-column-names.ts",
     "render-migrate-column-names": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts",
     "start:with-migration": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts && node dist/server/index.js"
   },

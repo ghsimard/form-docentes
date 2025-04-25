@@ -11,13 +11,13 @@ interface FormData {
   teachingGradesLate: string[];
   schedule: string;
   feedbackSources: string[];
-  Comunicacion: FrequencyRatings;
-  Practicas_Pedagogicas: FrequencyRatings;
-  Convivencia: FrequencyRatings;
+  comunicacion: FrequencyRatings;
+  practicas_pedagogicas: FrequencyRatings;
+  convivencia: FrequencyRatings;
   [key: string]: string | string[] | FrequencyRatings;
 }
 
-type FrequencySection = 'Comunicacion' | 'Practicas_Pedagogicas' | 'Convivencia';
+type FrequencySection = 'comunicacion' | 'practicas_pedagogicas' | 'convivencia';
 
 function App() {
   const [formData, setFormData] = useState<FormData>({
@@ -27,9 +27,9 @@ function App() {
     teachingGradesLate: [],
     schedule: '',
     feedbackSources: [],
-    Comunicacion: {},
-    Practicas_Pedagogicas: {},
-    Convivencia: {},
+    comunicacion: {},
+    practicas_pedagogicas: {},
+    convivencia: {},
   });
 
   const [schoolSuggestions, setSchoolSuggestions] = useState<string[]>([]);
@@ -111,9 +111,9 @@ function App() {
       );
     };
 
-    const comunicacionComplete = validateFrequencySection(frequencyQuestions7, 'Comunicacion');
-    const practicasComplete = validateFrequencySection(frequencyQuestions8, 'Practicas_Pedagogicas');
-    const convivenciaComplete = validateFrequencySection(frequencyQuestions9, 'Convivencia');
+    const comunicacionComplete = validateFrequencySection(frequencyQuestions7, 'comunicacion');
+    const practicasComplete = validateFrequencySection(frequencyQuestions8, 'practicas_pedagogicas');
+    const convivenciaComplete = validateFrequencySection(frequencyQuestions9, 'convivencia');
 
     if (!comunicacionComplete || !practicasComplete || !convivenciaComplete) {
       alert('Por favor, responda todas las preguntas de frecuencia antes de enviar el formulario.');
@@ -144,9 +144,9 @@ function App() {
           teachingGradesLate: [],
           schedule: '',
           feedbackSources: [],
-          Comunicacion: {},
-          Practicas_Pedagogicas: {},
-          Convivencia: {},
+          comunicacion: {},
+          practicas_pedagogicas: {},
+          convivencia: {},
         });
       } else {
         throw new Error(result.error || 'Failed to submit form');
@@ -453,19 +453,19 @@ function App() {
               questionNumber={6} 
               questions={frequencyQuestions7} 
               title="COMUNICACIÓN"
-              section="Comunicacion"
+              section="comunicacion"
             />
             <FrequencyMatrix 
               questionNumber={7} 
               questions={frequencyQuestions8} 
               title="PRÁCTICAS PEDAGÓGICAS"
-              section="Practicas_Pedagogicas"
+              section="practicas_pedagogicas"
             />
             <FrequencyMatrix 
               questionNumber={8} 
               questions={frequencyQuestions9} 
               title="CONVIVENCIA"
-              section="Convivencia"
+              section="convivencia"
             />
 
             {/* Submit Button */}

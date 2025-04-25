@@ -3,85 +3,64 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+if (!process.env.DATABASE_URL) {
+  console.error('DATABASE_URL environment variable is not set!');
+  process.exit(1);
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false
+  } : false
 });
 
 async function migrateColumnNames() {
+  const client = await pool.connect();
+  
   try {
-    // Migrate acudientes_form_submissions
-    try {
-      await pool.query(`ALTER TABLE acudientes_form_submissions RENAME COLUMN frequency_ratings5 TO "Comunicacion";`);
-      console.log('Renamed frequency_ratings5 to Comunicacion in acudientes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings5:', error);
-    }
+    // Start a transaction
+    await client.query('BEGIN');
 
-    try {
-      await pool.query(`ALTER TABLE acudientes_form_submissions RENAME COLUMN frequency_ratings6 TO "Practicas_Pedagogicas";`);
-      console.log('Renamed frequency_ratings6 to Practicas_Pedagogicas in acudientes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings6:', error);
-    }
+    // Rename the columns
+    await client.query(`
+      ALTER TABLE docentes_form_submissions 
+      RENAME COLUMN "Comunicacion" TO comunicacion;
+    `);
+    console.log('Renamed Comunicacion to comunicacion');
 
-    try {
-      await pool.query(`ALTER TABLE acudientes_form_submissions RENAME COLUMN frequency_ratings7 TO "Convivencia";`);
-      console.log('Renamed frequency_ratings7 to Convivencia in acudientes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings7:', error);
-    }
+    await client.query(`
+      ALTER TABLE docentes_form_submissions 
+      RENAME COLUMN "Practicas_Pedagogicas" TO practicas_pedagogicas;
+    `);
+    console.log('Renamed Practicas_Pedagogicas to practicas_pedagogicas');
 
-    // Migrate estudiantes_form_submissions
-    try {
-      await pool.query(`ALTER TABLE estudiantes_form_submissions RENAME COLUMN frequency_ratings5 TO "Comunicacion";`);
-      console.log('Renamed frequency_ratings5 to Comunicacion in estudiantes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings5:', error);
-    }
+    await client.query(`
+      ALTER TABLE docentes_form_submissions 
+      RENAME COLUMN "Convivencia" TO convivencia;
+    `);
+    console.log('Renamed Convivencia to convivencia');
 
-    try {
-      await pool.query(`ALTER TABLE estudiantes_form_submissions RENAME COLUMN frequency_ratings6 TO "Practicas_Pedagogicas";`);
-      console.log('Renamed frequency_ratings6 to Practicas_Pedagogicas in estudiantes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings6:', error);
-    }
-
-    try {
-      await pool.query(`ALTER TABLE estudiantes_form_submissions RENAME COLUMN frequency_ratings7 TO "Convivencia";`);
-      console.log('Renamed frequency_ratings7 to Convivencia in estudiantes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings7:', error);
-    }
-
-    // Migrate docentes_form_submissions
-    try {
-      await pool.query(`ALTER TABLE docentes_form_submissions RENAME COLUMN frequency_ratings6 TO "Comunicacion";`);
-      console.log('Renamed frequency_ratings6 to Comunicacion in docentes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings6:', error);
-    }
-
-    try {
-      await pool.query(`ALTER TABLE docentes_form_submissions RENAME COLUMN frequency_ratings7 TO "Practicas_Pedagogicas";`);
-      console.log('Renamed frequency_ratings7 to Practicas_Pedagogicas in docentes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings7:', error);
-    }
-
-    try {
-      await pool.query(`ALTER TABLE docentes_form_submissions RENAME COLUMN frequency_ratings8 TO "Convivencia";`);
-      console.log('Renamed frequency_ratings8 to Convivencia in docentes_form_submissions');
-    } catch (error) {
-      console.error('Error renaming frequency_ratings8:', error);
-    }
-
-    console.log('Migration completed');
+    // Commit the transaction
+    await client.query('COMMIT');
+    console.log('Migration completed successfully');
   } catch (error) {
-    console.error('Error in migration:', error);
+    // Rollback in case of error
+    await client.query('ROLLBACK');
+    console.error('Error during migration:', error);
+    throw error;
   } finally {
-    await pool.end();
+    client.release();
   }
 }
 
-migrateColumnNames(); 
+// Run the migration
+migrateColumnNames()
+  .then(() => {
+    console.log('Migration completed');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Migration failed:', error);
+    process.exit(1);
+  }); 
