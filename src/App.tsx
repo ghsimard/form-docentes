@@ -331,6 +331,7 @@ function App() {
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Escriba al menos 3 letras para ver sugerencias"
                   autoComplete="off"
+                  title="Escriba al menos 3 letras para ver sugerencias de nombres de instituciones educativas"
                 />
                 {showSuggestions && 
                  schoolSuggestions.length > 0 && 
