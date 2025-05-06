@@ -46,6 +46,20 @@ function App() {
     }
   }, [formData.schoolName]);
 
+  // Hide dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -165,8 +179,8 @@ function App() {
     setSchoolSuggestions([]);
     setShowSuggestions(false);
 
-    // Only fetch new suggestions if we have 2 or more characters
-    if (value.length >= 2) {
+    // Only fetch new suggestions if we have 3 or more characters
+    if (value.length >= 3) {
       try {
         const response = await fetch(`/api/search-schools?q=${encodeURIComponent(value)}`);
         if (response.ok) {
@@ -315,19 +329,20 @@ function App() {
                   value={formData.schoolName}
                   onChange={handleSchoolNameChange}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Empiece a escribir para ver sugerencias..."
+                  placeholder="Escriba al menos 3 letras para ver sugerencias"
+                  autoComplete="off"
                 />
                 {showSuggestions && 
                  schoolSuggestions.length > 0 && 
-                 formData.schoolName.length >= 2 && (
+                 formData.schoolName.length >= 3 && (
                   <div
                     ref={dropdownRef}
-                    className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm"
+                    className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-80 rounded-md py-1 text-base overflow-auto focus:outline-none"
                   >
                     {schoolSuggestions.map((suggestion, index) => (
                       <div
                         key={index}
-                        className="cursor-pointer hover:bg-blue-50 px-4 py-2"
+                        className="cursor-pointer hover:bg-blue-50 px-4 py-3 text-base"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         <HighlightedText

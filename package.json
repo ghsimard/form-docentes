@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "proxy": "http://localhost:3009",
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.14.0",
@@ -60,7 +60,8 @@
     "migrate-column-names": "ts-node scripts/migrate-column-names.ts",
     "prod-migrate-column-names": "NODE_ENV=production ts-node scripts/migrate-column-names.ts",
     "render-migrate-column-names": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts",
-    "start:with-migration": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts && node dist/server/index.js"
+    "start:with-migration": "NODE_ENV=production RENDER=true ts-node scripts/prod-migrate-column-names.ts && node dist/server/index.js",
+    "clear-submissions": "node --experimental-specifier-resolution=node scripts/clear-submissions.js"
   },
   "eslintConfig": {
     "extends": [

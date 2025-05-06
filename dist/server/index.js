@@ -17,8 +17,12 @@ console.log('Environment:', {
     PORT: process.env.PORT
 });
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+    exposedHeaders: ['Content-Length', 'X-Requested-With'],
+}));
+// Configure express to handle larger request headers
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Health check endpoint
 app.get('/health', async (req, res) => {
     try {
@@ -64,28 +68,48 @@ pool.query('SELECT NOW()')
         process.exit(1); // Exit in production if we can't connect to the database
     }
 });
-// Create table if it doesn't exist
-const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS docentes_form_submissions (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    institucion_educativa VARCHAR(255) NOT NULL,
-    anos_como_docente VARCHAR(50) NOT NULL,
-    grados_asignados TEXT[] NOT NULL,
-    jornada VARCHAR(50) NOT NULL,
-    retroalimentacion_de TEXT[] NOT NULL,
-    frequency_ratings6 JSONB NOT NULL,
-    frequency_ratings7 JSONB NOT NULL,
-    frequency_ratings8 JSONB NOT NULL
-  );
-`;
-pool.query(createTableQuery)
-    .then(() => console.log('docentes_form_submissions table created successfully'))
-    .catch(err => console.error('Error creating docentes_form_submissions table:', err));
 // API endpoint to save form data
 app.post('/api/submit-form', async (req, res) => {
     try {
-        const { schoolName, yearsOfExperience, teachingGradesEarly, teachingGradesLate, schedule, feedbackSources, frequencyRatings6, frequencyRatings7, frequencyRatings8 } = req.body;
+        const { schoolName, yearsOfExperience, teachingGradesEarly, teachingGradesLate, schedule, feedbackSources, comunicacion, practicas_pedagogicas, convivencia } = req.body;
+        // Log the received data for debugging
+        console.log('Received form data:', {
+            schoolName,
+            yearsOfExperience,
+            teachingGradesEarly,
+            teachingGradesLate,
+            schedule,
+            feedbackSources,
+            hasComunicacion: !!comunicacion,
+            hasPracticas: !!practicas_pedagogicas,
+            hasConvivencia: !!convivencia
+        });
+        // Validate required fields
+        if (!schoolName || !yearsOfExperience || !schedule) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields',
+                details: {
+                    schoolName: !schoolName,
+                    yearsOfExperience: !yearsOfExperience,
+                    schedule: !schedule
+                }
+            });
+        }
+        // Combine early and late teaching grades into a single array
+        const allGrades = [...(teachingGradesEarly || []), ...(teachingGradesLate || [])];
+        if (allGrades.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'At least one teaching grade must be selected'
+            });
+        }
+        if (!feedbackSources || feedbackSources.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'At least one feedback source must be selected'
+            });
+        }
         const query = `
       INSERT INTO docentes_form_submissions (
         institucion_educativa,
@@ -93,24 +117,22 @@ app.post('/api/submit-form', async (req, res) => {
         grados_asignados,
         jornada,
         retroalimentacion_de,
-        frequency_ratings6,
-        frequency_ratings7,
-        frequency_ratings8
+        comunicacion,
+        practicas_pedagogicas,
+        convivencia
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;
     `;
-        // Combine early and late teaching grades into a single array
-        const allGrades = [...teachingGradesEarly, ...teachingGradesLate];
         const values = [
             schoolName,
             yearsOfExperience,
             allGrades,
             schedule,
             feedbackSources,
-            frequencyRatings6,
-            frequencyRatings7,
-            frequencyRatings8
+            comunicacion,
+            practicas_pedagogicas,
+            convivencia
         ];
         const result = await pool.query(query, values);
         res.json({
@@ -122,7 +144,8 @@ app.post('/api/submit-form', async (req, res) => {
         console.error('Error saving form response:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to save form response'
+            error: 'Failed to save form response',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
@@ -130,11 +153,23 @@ app.post('/api/submit-form', async (req, res) => {
 app.get('/api/search-schools', async (req, res) => {
     const searchTerm = req.query.q;
     try {
+        // First check if the rectores table exists
+        const tableCheck = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'rectores'
+      );
+    `);
+        if (!tableCheck.rows[0].exists) {
+            // If table doesn't exist, return empty results
+            return res.json([]);
+        }
         const query = `
       SELECT DISTINCT TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_) as school_name
       FROM rectores
       WHERE LOWER(TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_)) LIKE LOWER($1)
-      LIMIT 10;
+      ORDER BY school_name;
     `;
         const result = await pool.query(query, [`%${searchTerm}%`]);
         res.json(result.rows.map(row => row.school_name));

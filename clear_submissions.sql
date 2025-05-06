@@ -1,0 +1,1 @@
+DELETE FROM docentes_form_submissions;

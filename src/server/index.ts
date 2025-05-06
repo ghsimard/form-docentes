@@ -22,8 +22,13 @@ console.log('Environment:', {
 });
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  exposedHeaders: ['Content-Length', 'X-Requested-With'],
+}));
+
+// Configure express to handle larger request headers
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Health check endpoint
 app.get('/health', async (req, res) => {
@@ -197,7 +202,7 @@ app.get('/api/search-schools', async (req, res) => {
       SELECT DISTINCT TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_) as school_name
       FROM rectores
       WHERE LOWER(TRIM(nombre_de_la_institucion_educativa_en_la_actualmente_desempena_)) LIKE LOWER($1)
-      LIMIT 10;
+      ORDER BY school_name;
     `;
     
     const result = await pool.query(query, [`%${searchTerm}%`]);
